@@ -1,69 +1,72 @@
 <script lang="ts" setup>
-import ReactiveCounter from '/@/components/ReactiveCounter.vue';
-import ReactiveHash from '/@/components/ReactiveHash.vue';
-import ElectronVersions from '/@/components/ElectronVersions.vue';
+import { reactive, ref } from "vue";
+import { listenPage } from '#preload'
 
-const APP_VERSION = import.meta.env.VITE_APP_VERSION;
+import Home from './views/Home.vue';
+import SSH from './views/SSH.vue';
+
+let tabIndex = ref('home');
+// const terminal: TerminalTabs[] = reactive([]);
+const terminal: Record<string, string> = reactive({})
+
+listenPage({
+  pageCreate: (id, type, options) => {
+    let title = ''
+    if(type === "ssh") title = "SSH"
+    else if(type === "sftp") title = "SFTP"
+
+    terminal[id] = title
+    console.log(terminal)
+    tabIndex.value = id
+  },
+  pageClose: (d) => {
+    removeTerminal(d)
+    tabIndex.value = 'home';
+  }
+})
+
+
+function removeTerminal(key: string){
+  delete terminal[key]
+}
+
+function selectTab(key: string){
+  tabIndex.value = key;
+}
+
 </script>
 
 <template>
-  <img
-    alt="Vue logo"
-    src="../assets/logo.svg"
-    width="150"
-  />
+  <nav class="flex pt-2 mx-auto bg-gray-200">
+    <button class="ml-2 space-x-8 w-[250px] mt-1 text-left" @click="selectTab('home')">
+      <div :class="`bg-white py-1 ${tabIndex === 'home' ? 'pt-2' : 'mt-1'} rounded-t-lg border-r-3 hover:bg-slate-50 active:bg-stone-100`">
+        <p class="ml-2 inline-flex items-center">
+          <!-- <vue-feather type="home" size="16" class="mr-2" /> -->
+          Home
+        </p>
+      </div>
+    </button>
+ 
+    <button class="ml-2 space-x-8 w-[250px] text-left" v-for="(key, idx) in Object.keys(terminal)" v-bind:key="idx" @click="selectTab(key)">
+      <div :class="`bg-white ${tabIndex === key ? 'pt-2 mt-1' : 'mt-2'} py-1 rounded-t-lg border-r-3 hover:bg-slate-50 active:bg-stone-100`">
+        <p class="ml-2 inline-flex items-center">
+          <button class="flex items-center rounded-lg hover:bg-gray-200 mr-2" @click="removeTerminal(key)">
+            <!-- <vue-feather type="x" size="16" /> -->
+          </button>
+          {{ terminal[key] }}
+        </p>
+      </div>
+    </button>
 
-  <p>
-    <!-- Example how to inject current app version to UI -->
-    App version: {{ APP_VERSION }}
-  </p>
+    <!-- <button class="ml-2 space-x-8 w-[32px] mt-1.5" @click="addTerminal()">
+      <div class="bg-white py-1 rounded-t-lg rounded-lg hover:bg-slate-50 active:bg-stone-100">
+        <p class="inline-flex items-center">
+          <vue-feather type="plus" size="16" />
+        </p>
+      </div>
+    </button> -->
+  </nav>
 
-  <p>
-    For a guide and recipes on how to configure / customize this project,<br />
-    check out the
-    <a
-      href="https://github.com/cawa-93/vite-electron-builder"
-      target="_blank"
-    >
-      vite-electron-builder documentation
-    </a>
-    .
-  </p>
-
-  <fieldset>
-    <legend>Test Vue Reactivity</legend>
-    <reactive-counter />
-  </fieldset>
-
-  <fieldset>
-    <legend>Test Node.js API</legend>
-    <reactive-hash />
-  </fieldset>
-
-  <fieldset>
-    <legend>Environment</legend>
-    <electron-versions />
-  </fieldset>
-
-  <p>
-    Edit
-    <code>packages/renderer/src/App.vue</code> to test hot module replacement.
-  </p>
+  <Home v-if="tabIndex === 'home'" />
+  <SSH v-for="(key, _) in Object.keys(terminal)" :hidden="tabIndex !== key" :page_id="key" />
 </template>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin: 60px auto;
-  max-width: 700px;
-}
-
-fieldset {
-  margin: 2rem;
-  padding: 1rem;
-}
-</style>
