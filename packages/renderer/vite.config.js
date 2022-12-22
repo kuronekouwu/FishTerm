@@ -6,6 +6,8 @@ import {renderer} from 'unplugin-auto-expose';
 import {join} from 'node:path';
 import {injectAppVersion} from '../../version/inject-app-version-plugin.mjs';
 
+import ViteFonts from 'vite-plugin-fonts'
+
 const PACKAGE_ROOT = __dirname;
 const PROJECT_ROOT = join(PACKAGE_ROOT, '../..');
 
@@ -48,7 +50,18 @@ const config = {
       preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts'),
     }),
     injectAppVersion(),
+    ViteFonts({
+      custom: {
+        preload: true,
+        families: {
+          'Fira Code': './assets/woff2/*.woff2'
+        }
+      }
+    })
   ],
+  define: {
+    '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
+}
 };
 
 export default config;
