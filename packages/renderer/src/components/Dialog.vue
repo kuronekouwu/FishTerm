@@ -70,10 +70,10 @@ export default defineComponent({
                 v-show="showModal"
             >
                 <div
-                    class="flex items-start justify-center min-h-screen pt-24 max-h-screen sm:pt-3 md:pt-5 lg:pt-[16] text-center"
+                    class="flex items-center justify-center min-h-screen pt-24 max-h-screen sm:pt-3 md:pt-5 lg:pt-[16] text-center"
                 >
                         <transition
-                            enter-active-class="transition ease-out duration-300 transform"
+                            enter-active-class="transition ease-out duration-200 transform"
                             enter-from-class="opacity-0 translate-y-10 scale-95"
                             enter-to-class="opacity-100 translate-y-0 scale-100"
                             leave-active-class="ease-in duration-200"
@@ -81,11 +81,11 @@ export default defineComponent({
                             leave-to-class="opacity-0 translate-y-10 translate-y-0 scale-95"
                         >
                             <div
-                                class=" sm:max-h-screen overflow-y-auto relative bg-white rounded-lg text-left shadow-xl p-8 w-[80%] lg:w-1/2"
+                                class=" sm:max-h-screen overflow-y-auto relative bg-white dark:bg-[#121212] rounded-lg text-left shadow-xl p-8 w-[80%] lg:w-1/2"
                                 role="dialog"
                                 ref="modal"
                                 aria-modal="true"
-                                v-show="showModal"
+                                v-if="showModal"
                                 aria-labelledby="modal-headline"
                             >
                                 <button

@@ -27,6 +27,6 @@ export default defineComponent({
 <template>
     <div class="inline-flex items-center">
         <!-- <vue-feather :type="icon" class="mr-2" v-if="icon" /> -->
-        <h1 class="ml-1 text-2xl font-bold" v-text="title" />
+        <h1 class="ml-1 text-2xl font-bold text-gray-700 dark:text-white" v-text="title" />
     </div>
 </template>
