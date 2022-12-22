@@ -11,8 +11,8 @@ export function listenPage(o: OptionPage){
     ipcRenderer.on('page.exit', (_, uuid, options) => {o.pageClose(uuid, options);});
 }
 
-export function createPage(type: 'ssh' | 'sftp' = 'ssh', option: any){
-    ipcRenderer.send('page.create', type, option);
+export function loadConfig(){
+    ipcRenderer.send('config.load');
 }
 
 export function closePage(page: string){
