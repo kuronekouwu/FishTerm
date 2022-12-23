@@ -8,6 +8,7 @@ interface OptionSSH {
     sshClose: () => void;
     sshTimeout: () => void;
     sshError: (title: string, desc: string) => void;
+    sshRequst: (type: string, data: any) => void;
     settings: {
         rows: number;
         cols: number;
@@ -50,9 +51,17 @@ export function closeSSH(sessionId: string){
     ipcRenderer.send(`ssh.session.${sessionId}.close`);
 }
 
+export function resizeSSH(sessionId: string, cols: number, rows: number){
+    ipcRenderer.send(`ssh.session.${sessionId}.resize`, cols, rows);
+}
+
 export function listenSSH(o: OptionSSH){
     const sessionData = v4();
     ipcRenderer.send('ssh.session.create', sessionData, o.configId, o.settings.cols, o.settings.rows);
+
+    ipcRenderer.on(`ssh.session.${sessionData}.request`, (_, type, data) => {
+        o.sshRequst(type, data)
+    });
 
     ipcRenderer.on(`ssh.session.${sessionData}.open`, (_) => {
         o.sshOpen((data) => {

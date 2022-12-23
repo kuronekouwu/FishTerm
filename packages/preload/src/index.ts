@@ -11,7 +11,9 @@ export {
     listenSSHConfigs,
     createSSHConfig,
     updateSSHConfig,
-    closeSSH
+    closeSSH,
+    resizeSSH
 } from './ssh';
 export {loadConfig} from './config';
-export { applicationListen } from './app'
+export {applicationListen} from './app';
+export { openBrowser } from './url'
