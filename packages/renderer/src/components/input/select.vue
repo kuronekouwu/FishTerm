@@ -85,118 +85,6 @@ onClickOutside(SBox, () => {
 window.addEventListener('resize', function () {
     resizeSelectBox();
 });
-// export default defineComponent({
-//     /**
-//      * Select
-//      * Format:
-//      * [{
-//      *  name: string,
-//      *  value: string,
-//      *  icon?: string,
-//      *  selected?: boolean
-//      * }]
-//      */
-//     props: {
-//         name: {
-//             type: String,
-//             required: true,
-//         },
-//         type: {
-//             type: String,
-//             default: "text",
-//         },
-//         data: {
-//             type: Array as PropType<SelectData[]>,
-//             default: [],
-//         },
-//         modelValue: String,
-//     },
-//     emits: ["update:modelValue"],
-//     setup(props, context) {
-//         const name = toRef(props, "name");
-//         const type = toRef(props, "type");
-//         const data = toRef(props, "data");
-
-//         // Select label
-//         const SLabel_isOpen = ref(false);
-//         const SLabel_dataPreview = ref({} as SelectData);
-
-//         // Select Box
-//         const SBox = ref(null);
-//         const SBox_Size = ref(0);
-
-//         // Variable
-//         let isClickedOutside = false;
-
-//         // Function
-//         function resizeSelectBox() {
-//             const doc = document.getElementById("selectBox-label");
-//             if (!doc) return;
-
-//             SBox_Size.value = doc.getBoundingClientRect().width;
-//         }
-
-//         function clickSelectTextBox() {
-//             nextTick(function () {
-//                 if (!isClickedOutside)
-//                     SLabel_isOpen.value = !SLabel_isOpen.value;
-//                 else isClickedOutside = false;
-
-//                 if (SLabel_isOpen.value) {
-//                     resizeSelectBox();
-//                 }
-//             });
-//         }
-
-//         function SelectItem(data: SelectData) {
-//             SLabel_isOpen.value = false;
-
-//             context.emit("update:modelValue", data.value.toString());
-//         }
-
-//         function isSelected(value: string | number) {
-//             const isSelectedVal = value === props.modelValue;
-//             if(isSelectedVal) {
-//                 SLabel_dataPreview.value = data.value.find(item => item.value === value) || {name: "", value: ""};
-//             }
-
-//             return isSelectedVal;
-//         }
-
-//         // Plugins
-//         onClickOutside(SBox, () => {
-//             if (SLabel_isOpen.value === true) {
-//                 isClickedOutside = true;
-//                 SLabel_isOpen.value = false;
-//             }
-//         });
-
-//         // Event
-//         window.addEventListener("resize", function () {
-//             resizeSelectBox();
-//         });
-
-//         return {
-//             // Props
-//             name,
-//             type,
-//             data,
-
-//             // Select Box
-//             SBox,
-//             SBox_Size,
-
-//             // Select label
-//             SLabel_isOpen,
-//             SLabel_dataPreview,
-
-//             // Function
-//             SelectItem,
-//             clickSelectTextBox,
-//             isSelected,
-//         };
-//     },
-// });
 </script>
 
 <template>
@@ -215,13 +103,13 @@ window.addEventListener('resize', function () {
                     aria-expanded="true"
                     aria-labelledby="listbox-label"
                     id="selectBox-label"
-                    class="cursor-pointer dark:border-slate-600 dark:bg-slate-800 relative w-full rounded-md border border-gray-300 bg-white  pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                    class="cursor-pointer dark:border-slate-600 dark:bg-slate-800  relative w-full rounded-md border border-gray-300 bg-white  pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                 >
                     <div
                         class="flex items-center space-x-3 text-black dark:text-white"
                         v-if="SLabel_dataPreview.name"
                     >
-                        <Icon :icon="SLabel_dataPreview.icon" class="text-white" />
+                        <Icon :icon="SLabel_dataPreview.icon" class="text-black dark:text-white" />
                         <span
                             class="block truncate"
                             v-text="SLabel_dataPreview.name"
@@ -271,10 +159,10 @@ window.addEventListener('resize', function () {
                             role="option"
                             v-for="(d, idx) in data"
                             :key="idx"
-                            class="text-gray-900 select-none relative py-2 pl-3 pr-9 cursor-pointer hover:text-white hover:bg-indigo-600 focus:outline-none focus:text-white focus:bg-indigo-600"
+                            class="select-none relative py-2 pl-3 pr-9 cursor-pointer text-indigo-600 hover:bg-indigo-600 hover:text-white dark:text-white"
                         >
-                            <div class="flex items-center space-x-3 text-black dark:text-white">
-                                <Icon :icon="d.icon" class="text-white" v-if="d.icon" />
+                            <div class="flex items-center space-x-3">
+                                <Icon :icon="d.icon" v-if="d.icon" />
                                 <span
                                     class="block truncate"
                                     v-text="d.name"
@@ -287,7 +175,7 @@ window.addEventListener('resize', function () {
                                     'font-semibold': isSelected(d.value),
                                 }"
                             >
-                                <Icon icon="fa-soild fa-check-circle" class="text-white" v-if="isSelected(d.value)" />
+                                <Icon icon="fa-soild fa-check-circle" v-if="isSelected(d.value)" />
                             </span>
                         </li>
                     </ul>
