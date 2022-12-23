@@ -1,45 +1,66 @@
 <script lang="ts" setup>
 import {onMounted, defineProps, ref, onBeforeUnmount} from 'vue';
 
+import Button from '../components/Button.vue';
+
 import {Terminal} from 'xterm';
 import {FitAddon} from 'xterm-addon-fit';
-import {listenSSH, closePage, closeSSH} from '#preload';
+import {listenSSH, closePage, closeSSH, openBrowser, resizeSSH} from '#preload';
 
 const props = defineProps(['page_id', 'screen_size', 'options']);
 
 const term = new Terminal({
     theme: {
-        background: '#0f172a'
+        background: '#0f172a',
     },
-    fontFamily: 'Fira Code'
+    fontFamily: 'Fira Code',
 });
 const fitAddon = new FitAddon();
 
-const isShow = ref(false)
+const isShow = ref(false);
 const terminalHeight = ref();
 const windowHeight = ref(window.screen.availHeight);
 const termDiv = ref<HTMLDivElement | null>(null);
-const clientID = ref('')
- 
+const monitorDiv = ref<HTMLDivElement | null>(null);
+const clientID = ref('');
+
+// Modal loading
+const isLoading = ref(false);
+const pageStep = ref(0);
+const LoginURL = ref('');
+
 onMounted(async () => {
-    terminalHeight.value = window.screen.availHeight - props.screen_size || 0;
-    
+    console.log(monitorDiv.value?.clientHeight || 0)
+    // @ts-ignore
+    terminalHeight.value = (window.screen.availHeight - props.screen_size || 0 - monitorDiv.value?.clientHeight) - monitorDiv.value?.clientHeight;
+    console.log(monitorDiv.value?.clientHeight )
+
+    // Init window resize
+    window.addEventListener(
+        'resize',
+        () => {
+            fitAddon.fit();
+            resizeSSH(clientID.value, term.cols, term.rows);
+        },
+        false,
+    );
+
     setTimeout(() => {
-        term.loadAddon(fitAddon)
+        term.loadAddon(fitAddon);
         // @ts-ignore
         term.open(termDiv.value);
         fitAddon.fit();
-    }, 100)
+    }, 100);
 
     setTimeout(() => {
         clientID.value = listenSSH({
-            configId: props.options.configId || "",
+            configId: props.options.configId || '',
             settings: {
                 cols: term.cols,
                 rows: term.rows,
             },
             sshOpen: (w: (d: any) => void) => {
-                isShow.value = true
+                isShow.value = true;
                 term.onData(data => {
                     w(data);
                 });
@@ -52,27 +73,38 @@ onMounted(async () => {
                 term.write(d);
             },
             sshTimeout: () => {
-                isShow.value = true
-                term.write(`Timeout from server xxx.xxx.xxx.xxx`)
-                term.write(`Please try again later`)
+                isShow.value = true;
+                term.write(`Timeout from server xxx.xxx.xxx.xxx`);
+                term.write(`Please try again later`);
             },
             sshError: (title, desc) => {
-                isShow.value = true
-                term.write(`${title} ${desc}`)
-            }
+                isShow.value = true;
+                term.write(`${title} ${desc}`);
+            },
+            sshRequst: (type, data) => {
+                // console.log(type, data)
+                if (type === 'CLOUDFLARE_LOGIN') {
+                    pageStep.value = 1;
+                    LoginURL.value = data.url;
+                }
+            },
         });
     }, 250);
 });
 
 onBeforeUnmount(() => {
-    closeSSH(clientID.value)
-})
-
+    closeSSH(clientID.value);
+});
 </script>
 
 <template>
-    <div class="min-h-screen flex items-center justify-center mx-auto z-20" v-show="!isShow">
-        <div class="flex items-center justify-center bg-white dark:bg-slate-800 p-10 rounded-lg">
+    <div
+        class="min-h-screen flex items-center justify-center mx-auto z-20 bg-slate-800"
+        v-show="!isShow"
+    >
+        <div
+            class="flex items-center justify-center p-10 bg-white dark:dark:bg-slate-900 rounded-lg"
+        >
             <div class="space-y-3 text-center">
                 <div role="status">
                     <svg
@@ -92,18 +124,62 @@ onBeforeUnmount(() => {
                     </svg>
                     <span class="sr-only">Loading...</span>
                 </div>
-                <h1 class="text-white dark:text-white">Connecting to server ....</h1>
+                <div v-if="pageStep === 0">
+                    <h1 class="text-black dark:text-white">Connecting to server ....</h1>
+                </div>
+                <div
+                    v-if="pageStep === 1"
+                    class="space-y-3"
+                >
+                    <h1 class="text-black dark:text-white"
+                        >Please login cloudflare first to access this SSH</h1
+                    >
+                    <div>
+                        <Button
+                            class="!bg-orange-400"
+                            @click="openBrowser(LoginURL)"
+                        >
+                            <Icon icon="fab fa-cloudflare" />
+                            <p>Login with cloudflare</p>
+                        </Button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="bg-black z-10">
+    <div class="bg-[#0f172a] z-10">
         <div
-        ref="termDiv"
-        :style="{
-            'min-height': `${(terminalHeight / windowHeight) * 100}vh !important`,
-        }"
+            ref="termDiv"
+            :style="{
+                'min-height': `${((terminalHeight / windowHeight) * 100)}vh !important`,
+            }"
         ></div>
-  </div>
+        <div
+            ref="monitorDiv"
+            class="py-1  sticky bottom-0 space-x-3 flex bg-gray-200 z-50 w-full dark:dark:bg-slate-800 text-dark dark:text-white justify-end"
+        >
+            <p class="flex items-center space-x-1">
+                <Icon icon="fas fa-microchip" />
+                <p>100%</p>
+            </p>
+            <p class="flex items-center space-x-1">
+                <Icon icon="fas fa-memory" />
+                <p>100%</p>
+            </p>
+            <p class="flex items-center space-x-1">
+                <Icon icon="fas fa-hard-drive" />
+                <p>100%</p>
+            </p>
+            <p class="flex items-center space-x-1">
+                <Icon icon="fas fa-upload" />
+                <p>1GB</p>
+            </p>
+            <p class="flex items-center space-x-1">
+                <Icon icon="fas fa-download" />
+                <p>1GB</p>
+            </p>
+        </div>
+    </div>
 </template>
 
 <style>
