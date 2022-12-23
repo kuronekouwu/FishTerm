@@ -68,6 +68,7 @@ function updateSSH(e: Event) {
     // Replace it
 
     config.data.connection.password.value = previewPasswordData.value
+    config.data.connection.host = previewConnectionData.value
 
     if (props.actionType === 'edit'){
         updateSSHConfig(props.configId, JSON.stringify(config.data), () => {
