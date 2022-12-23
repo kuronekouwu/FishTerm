@@ -77,17 +77,11 @@ onMounted(() => {
                 Add terminal
             </Button>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-3  overflow-y-auto h-[800px] my-7 scrollbar">
             <Card
                 v-for="(key, idx) in Object.keys(config)"
                 :key="idx"
             >
-                <!-- <template #tags>
-                <span class="items-center px-4 py-2 rounded-full text-white bg-red-500 font-semibold text-sm flex align-center w-max  ">
-                    <vue-feather type="x" class="mr-2" />
-                    Disconnected
-                </span>
-            </template> -->
                 <template #default>
                     <img
                         class="h-24 w-24 rounded-full mx-6"
@@ -96,7 +90,7 @@ onMounted(() => {
                     />
                     <div
                         v-else
-                        class="text-white text-7xl flex items-center mx-6"
+                        class="text-slate-800 dark:text-white text-7xl flex items-center mx-6"
                     >
                         <Icon icon="fas fa-terminal" />
                     </div>
