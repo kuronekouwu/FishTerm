@@ -6,6 +6,7 @@ import {renderer} from 'unplugin-auto-expose';
 import {join} from 'node:path';
 import {injectAppVersion} from '../../version/inject-app-version-plugin.mjs';
 
+import svgLoader from 'vite-svg-loader';
 import ViteFonts from 'vite-plugin-fonts'
 
 const PACKAGE_ROOT = __dirname;
@@ -57,7 +58,8 @@ const config = {
           'Fira Code': './assets/woff2/*.woff2'
         }
       }
-    })
+    }),
+    svgLoader()
   ],
   define: {
     '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
