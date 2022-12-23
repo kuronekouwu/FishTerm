@@ -11,7 +11,12 @@ import {
     faInfoCircle,
     faPlug,
     faCogs,
-    faPlus
+    faPlus,
+    faMicrochip,
+    faMemory,
+    faUpload,
+    faDownload,
+    faHardDrive
 } from '@fortawesome/free-solid-svg-icons';
 import {faCloudflare} from '@fortawesome/free-brands-svg-icons';
 
@@ -26,7 +31,12 @@ library.add(
     faInfoCircle,
     faPlug,
     faCogs,
-    faPlus
+    faPlus,
+    faMicrochip,
+    faMemory,
+    faUpload,
+    faDownload,
+    faHardDrive
 );
 
 export default FontAwesomeIcon;
