@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {onMounted, reactive, ref, onBeforeMount} from 'vue';
+import {onMounted, reactive, ref,watch} from 'vue';
 import {listenPage, loadConfig, applicationListen} from '#preload';
 
 import Home from './views/Home.vue';
@@ -32,9 +32,7 @@ onMounted(() => {
     // Page
     listenPage({
         pageCreate: (id, type, options) => {
-            let title = '';
-            if (type === 'ssh') title = 'SSH';
-            else if (type === 'sftp') title = 'SFTP';
+            let title = options._value.connection.username + '@' + options._value.connection.host;
 
             tabHeight.value = tab.value?.clientHeight || 0;
 
@@ -60,6 +58,10 @@ onMounted(() => {
         },
     });
 });
+
+watch(tabIndex, (n: string, o: string) => {
+    document.getElementsByTagName("title")[0].innerText = terminal[n]?.title || "Home"
+})
 </script>
 
 <template>
