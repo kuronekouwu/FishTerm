@@ -29,7 +29,7 @@ interface IConfig {
 }
 
 const showModal = ref(false);
-const config: Record<string, IConfig> = reactive({});
+let config: Record<string, IConfig> = reactive({});
 const settingId = ref('');
 const actionType = ref('add');
 
@@ -46,10 +46,14 @@ function openSettings(configId: string) {
 
 onMounted(() => {
     listenSSHConfigs({
-        sshPageAll: d => {
+        sshPageAll: (d, spicalRemoveArray) => {
             for (const key of Object.keys(d)) {
                 // @ts-ignore
                 config[key] = d[key];
+            }
+            // Remove data old
+            for(const val of spicalRemoveArray){
+                delete config[val]
             }
         },
         createSSHConfig: () => {

@@ -16,7 +16,8 @@ import {
     faMemory,
     faUpload,
     faDownload,
-    faHardDrive
+    faHardDrive,
+    faTimesCircle
 } from '@fortawesome/free-solid-svg-icons';
 import {faCloudflare} from '@fortawesome/free-brands-svg-icons';
 
@@ -36,7 +37,8 @@ library.add(
     faMemory,
     faUpload,
     faDownload,
-    faHardDrive
+    faHardDrive,
+    faTimesCircle
 );
 
 export default FontAwesomeIcon;

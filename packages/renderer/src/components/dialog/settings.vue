@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {base16, loadSSHConfigInfo, updateSSHConfig, createSSHConfig} from '#preload';
+import {loadSSHConfigInfo, updateSSHConfig, createSSHConfig, removeSSHConfig} from '#preload';
 
 import Title from '../Title.vue';
 import Text from '../input/text.vue';
@@ -7,18 +7,22 @@ import Select from '../input/select.vue';
 import File from '../input/file.vue';
 import Button from '../Button.vue';
 
+import Dialog from '../Dialog.vue';
+
 import {onMounted, reactive, ref} from 'vue';
 
 const props = defineProps(['configId', 'actionType']);
-const emit = defineEmits(["closePage"])
+const emit = defineEmits(['closePage']);
 
-const previewPasswordData = ref('')
-const previousPasswordType = ref(0)
-const previousPasswordData = ref('')
+const previewPasswordData = ref('');
+const previousPasswordType = ref(0);
+const previousPasswordData = ref('');
 
-const previewConnectionData = ref('')
-const previousConnectionType = ref(0)
-const previousConnectionData = ref('')
+const previewConnectionData = ref('');
+const previousConnectionType = ref(0);
+const previousConnectionData = ref('');
+
+const showModal = ref(false);
 
 const config = reactive({
     data: {
@@ -34,7 +38,7 @@ const config = reactive({
                 value: '',
             },
         },
-    }
+    },
 });
 
 const selectAuthType = ref([
@@ -64,35 +68,42 @@ const selectConnectionType = ref([
 ]);
 
 function updateSSH(e: Event) {
-    e.preventDefault()
+    e.preventDefault();
     // Replace it
 
-    config.data.connection.password.value = previewPasswordData.value
-    config.data.connection.host = previewConnectionData.value
+    config.data.connection.password.value = previewPasswordData.value;
+    config.data.connection.host = previewConnectionData.value;
 
-    if (props.actionType === 'edit'){
+    if (props.actionType === 'edit') {
         updateSSHConfig(props.configId, JSON.stringify(config.data), () => {
-            emit("closePage")
-        })
-    }else if (props.actionType === 'add'){
+            emit('closePage');
+        });
+    } else if (props.actionType === 'add') {
         createSSHConfig(JSON.stringify(config.data), () => {
-            emit("closePage")
-        })
+            emit('closePage');
+        });
     }
 }
 
-function updatePrivateKey(path: string){
-    previewPasswordData.value = path
+function deleteConfig() {
+    removeSSHConfig(props.configId, () => {
+        showModal.value = false;
+        emit('closePage');
+    })
 }
 
-function onUpdatePasswordSelect(value: number){
-    if(value != previousPasswordType.value) previewPasswordData.value = ''
-    else previewPasswordData.value = previousPasswordData.value
+function updatePrivateKey(path: string) {
+    previewPasswordData.value = path;
 }
 
-function onUpdateConnectionSelect(value: number){
-    if(value != previousConnectionType.value) previewConnectionData.value = ''
-    else previewConnectionData.value = previewConnectionData.value
+function onUpdatePasswordSelect(value: number) {
+    if (value != previousPasswordType.value) previewPasswordData.value = '';
+    else previewPasswordData.value = previousPasswordData.value;
+}
+
+function onUpdateConnectionSelect(value: number) {
+    if (value != previousConnectionType.value) previewConnectionData.value = '';
+    else previewConnectionData.value = previewConnectionData.value;
 }
 
 onMounted(() => {
@@ -100,14 +111,14 @@ onMounted(() => {
         loadSSHConfigInfo(props.configId, (e: any) => {
             config.data = reactive(e);
             // Host
-            previousConnectionType.value = e.connection.type
-            previewConnectionData.value = e.connection.host
-            previousConnectionData.value = e.connection.host
+            previousConnectionType.value = e.connection.type;
+            previewConnectionData.value = e.connection.host;
+            previousConnectionData.value = e.connection.host;
 
             // Password
-            previousPasswordType.value = e.connection.password.type
-            previewPasswordData.value = e.connection.password.value
-            previousPasswordData.value = e.connection.password.value
+            previousPasswordType.value = e.connection.password.type;
+            previewPasswordData.value = e.connection.password.value;
+            previousPasswordData.value = e.connection.password.value;
         });
     }
 });
@@ -119,7 +130,10 @@ onMounted(() => {
         icon="settings"
     />
     <hr class="m-3" />
-    <form @submit="updateSSH" class="space-y-3">
+    <form
+        @submit="updateSSH"
+        class="space-y-3"
+    >
         <Text
             v-model="config.data.title"
             name="Name host"
@@ -132,7 +146,10 @@ onMounted(() => {
             name="Connection Type"
             :data="selectConnectionType"
         />
-        <div class="grid grid-cols-2 gap-4" v-if="config.data.connection.type === 0">
+        <div
+            class="grid grid-cols-2 gap-4"
+            v-if="config.data.connection.type === 0"
+        >
             <Text
                 v-model="previewConnectionData"
                 name="SSH Host"
@@ -188,8 +205,42 @@ onMounted(() => {
             class="mr-2 mt-3 mb-2 w-full"
             type="submit"
         >
-            <!-- <vue-feather type="plus" class="mr-2" size="16" /> -->
-            {{ props.actionType === 'add' ? 'Add' : 'Update'  }} terminal
+            {{ props.actionType === 'add' ? 'Add' : 'Update' }} terminal
         </Button>
+        <Button
+            v-if="props.actionType !== 'add'"
+            @click="showModal = true"
+            :class="`!bg-red-500`"
+            class="mr-2 mt-3 mb-2 w-full"
+            type="button"
+        >
+            Delete terminal
+        </Button>
+        <Dialog
+            :show="showModal"
+            @close="showModal = false"
+        >
+            <div>
+                <p class="text-black dark:text-white">Are you sure delete this config?</p>
+                <div class="space-y-1">
+                    <Button
+                        v-if="props.actionType !== 'add'"
+                        :class="`!bg-red-500`"
+                        class="mr-2 mt-3 mb-2 w-full"
+                        type="button"
+                        @click="deleteConfig"
+                    >
+                        Delete it!
+                    </Button>
+                    <Button
+                        class="mr-2 mt-3 mb-2 w-full"
+                        type="submit"
+                        @click="showModal = false"
+                    >
+                        Cancel
+                    </Button>
+                </div>
+            </div>
+        </Dialog>
     </form>
 </template>
