@@ -11,8 +11,10 @@ export {
     listenSSHConfigs,
     createSSHConfig,
     updateSSHConfig,
+    removeSSHConfig,
     closeSSH,
-    resizeSSH
+    resizeSSH,
+    listenMonitor
 } from './ssh';
 export {loadConfig} from './config';
 export {applicationListen} from './app';

@@ -9,23 +9,32 @@ interface OptionSSH {
     sshTimeout: () => void;
     sshError: (title: string, desc: string) => void;
     sshRequst: (type: string, data: any) => void;
+    sshAuthFailed: () => void;
     settings: {
         rows: number;
         cols: number;
     }
 }
 
+interface OptionSSHMonitor {
+    sessionId: string;
+    cpu: (d: any) => void;
+    ram: (d: any) => void;
+    disk: (d: any) => void;
+    networks: (d: any) => void;
+}
+
 interface OptionSSHConfig {
-    sshPageAll: (d: any) => void
+    sshPageAll: (d: any, s: string[]) => void
     createSSHConfig: () => void
 }
 
-export function loadSSHConfigAll(){
-    ipcRenderer.send("ssh.config.load")
+export function loadSSHConfigAll(speicalRemove: string[] = []){
+    ipcRenderer.send("ssh.config.load", speicalRemove)
 }
 
 export function listenSSHConfigs(o: OptionSSHConfig){
-    ipcRenderer.on("ssh.config.load", (_, d) => o.sshPageAll(d))
+    ipcRenderer.on("ssh.config.load", (_, d, speicalRemove) => o.sshPageAll(d, speicalRemove))
     ipcRenderer.on("ssh.config.create", (_) => o.createSSHConfig())
 }
 
@@ -47,12 +56,35 @@ export function updateSSHConfig(config: string, data: any, cb: () => void){
     })
 }
 
+export function removeSSHConfig(config: string, cb: () => void){
+    ipcRenderer.send("ssh.config.remove", config)
+    ipcRenderer.once("ssh.config.remove", (_, configId: string) => {
+        loadSSHConfigAll([configId])
+        cb()
+    })
+}
+
 export function closeSSH(sessionId: string){
     ipcRenderer.send(`ssh.session.${sessionId}.close`);
 }
 
 export function resizeSSH(sessionId: string, cols: number, rows: number){
     ipcRenderer.send(`ssh.session.${sessionId}.resize`, cols, rows);
+}
+
+export function listenMonitor(o: OptionSSHMonitor){
+    const sessionId = o.sessionId;
+    const cb = {
+        cpu: o.cpu,
+        ram: o.ram,
+        disk: o.disk,
+        network: o.networks
+    }
+    ipcRenderer.on(`ssh.session.${sessionId}.monitor`, (_, type, data) => {
+        // @ts-ignore
+        cb[type]?.(data)
+    });
+
 }
 
 export function listenSSH(o: OptionSSH){
@@ -68,10 +100,23 @@ export function listenSSH(o: OptionSSH){
             ipcRenderer.send(`ssh.session.${sessionData}.write`, data);
         });
     });
+    ipcRenderer.on(`ssh.session.${sessionData}.auth.failed`, (_) => {
+        o.sshAuthFailed()
+    })
     ipcRenderer.on(`ssh.session.${sessionData}.data`, (_, d) => {
         o.sshData(d);
     });
     ipcRenderer.on(`ssh.session.${sessionData}.close`, (_) => {
+        // Close all event
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.close`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.request`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.open`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.data`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.timeout`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.error`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.monitor`)
+        ipcRenderer.removeAllListeners(`ssh.session.${sessionData}.auth.failed`)
+
         o.sshClose();
     });
     ipcRenderer.on(`ssh.session.${sessionData}.timeout`, (_) => {
