@@ -4,12 +4,12 @@
 </center>
 
 ## Feature
-- <input type="checkbox" disabled checked /> Remote SSH access
-- <input type="checkbox" disabled checked /> Remote Cloudflare SSH access
-- <input type="checkbox" disabled /> SFTP support
-- <input type="checkbox" disabled checked /> Monitor (Ex. CPU, RAM, etc.) support
-- <input type="checkbox" disabled /> X11 support
-- <input type="checkbox" disabled /> Port forwarding 
+- ✅ Remote SSH access
+- ✅ Remote Cloudflare SSH access
+- SFTP support
+- ✅ Monitor (Ex. CPU, RAM, etc.) support
+- X11 support
+- Port forwarding 
 
 ## Download 
 Please donwload lastest version in [Release](https://github.com/mrwan200/FishTerm/releases)
