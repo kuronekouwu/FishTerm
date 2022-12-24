@@ -53,7 +53,7 @@ const config = {
     injectAppVersion(),
     ViteFonts({
       custom: {
-        preload: true,
+        // preload: true,
         families: {
           'Fira Code': './assets/woff2/*.woff2'
         }
