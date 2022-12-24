@@ -1,6 +1,6 @@
 <center>
   <img src="./assets/fishterm-w.svg" style="background-color: white; padding: 10px; border-radius: 25px" />
-  A open-soruce Terimal remote access
+  <p align="center">A open-soruce Terimal remote access</p>
 </center>
 
 ## Feature
