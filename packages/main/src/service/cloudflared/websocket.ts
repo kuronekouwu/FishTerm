@@ -28,7 +28,7 @@ export class CloudflareSSH extends EventEmitter {
             
             // SSH Protocol
             ssh.once('ready', () => {
-                console.log("READY")
+                console.log(`Connected to server ${this.websocket.url}`)
             })
             ssh.on('data', (data: Buffer) => {
                 this.websocket.send(data);
@@ -40,8 +40,8 @@ export class CloudflareSSH extends EventEmitter {
                 this.emit('ssh.end');
                 this.websocket.close(1000);
             });
-            ssh.once('error', n => this.emit('ssh.error', n));
-            ssh.once('close', () => this.emit('ssh.close'));
+            ssh.once('ssh.error', n => this.emit('ssh.error', n));
+            ssh.once('close', () => this.emit('ssh.close'))
 
             // SSH2 Data
             ssh.on("password_request", (type, cb) => this.emit('ssh.password.request', type, cb))

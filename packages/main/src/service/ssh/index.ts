@@ -13,6 +13,7 @@ export class SSHProtocol extends EventEmitter {
 
     init(){
         this.ssh.once('ready', () => {
+            console.log(`Connected to server`)
             this.ssh.service('ssh-userauth')
             this.emit("ready")
         });
@@ -21,7 +22,6 @@ export class SSHProtocol extends EventEmitter {
         this.ssh.once('end', () => this.emit('end'));
         this.ssh.once('error', n => this.emit('error', n));
         this.ssh.once('close', () => this.emit('close'));
-
         this.ssh.on('SERVICE_ACCEPT', (name: string) => {
             if (name === 'ssh-userauth') {
                 this.emit("password_request", (type: string, data: {username: string; password: string}) => {
@@ -32,9 +32,10 @@ export class SSHProtocol extends EventEmitter {
                         const certKey = utils.parseKey(data.password);
                         // @ts-ignore
                         this.ssh.authPK(data.username, certKey);
+                        
                         this.ssh.once('USERAUTH_PK_OK', () => {
                             // @ts-ignore
-                            this.ssh.authPK('root', certKey, function (buf, cb) {
+                            this.ssh.authPK(data.username, certKey, function (buf, cb) {
                                 // @ts-ignore
                                 cb(certKey?.sign(buf));
                             });
@@ -46,6 +47,10 @@ export class SSHProtocol extends EventEmitter {
 
         this.ssh.on("USERAUTH_SUCCESS", () => {
             this.emit("connected", new SSHClient(this.ssh))
+        });
+
+        this.ssh.on("USERAUTH_FAILURE", (e) => {
+            this.emit("auth_failed")
         });
     }
 

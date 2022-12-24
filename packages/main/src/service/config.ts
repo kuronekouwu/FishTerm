@@ -19,7 +19,12 @@ export class ConfigLoader {
         const configData = this.loadSSH()
         configData[keyId] = data
         this.updateFile('ssh.json', configData)
+    }
 
+    deleteSSHInfo(keyId: string){
+        const configData = this.loadSSH()
+        delete configData[keyId]
+        this.updateFile('ssh.json', configData)
     }
 
     loadSSHInfo(keyId: string){

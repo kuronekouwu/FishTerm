@@ -10,24 +10,29 @@ import Dialog from './components/Dialog.vue';
 import Info from './components/dialog/info.vue';
 
 let tabIndex = ref('home');
-// const terminal: TerminalTabs[] = reactive([]);
+const isClickClosed = ref(false)
 const terminal: Record<string, {title: string; options: any}> = reactive({});
 
 const tab = ref<HTMLDivElement | null>(null);
 let tabHeight = ref(0);
 
 function removeTerminal(key: string) {
+    isClickClosed.value = true
     delete terminal[key];
-    tabIndex.value = 'home'
+    tabIndex.value = 'home';
 }
 
 function selectTab(key: string) {
+    if(isClickClosed.value){
+        isClickClosed.value = false;
+        return
+    };
     tabIndex.value = key;
 }
 
 const showModal = ref(false);
 
-onMounted(() => {
+onMounted(async () => {
     loadConfig();
     // Page
     listenPage({
