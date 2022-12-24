@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js add ssh2-stream
+  /usr/local/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js add FontFaceObserver
 
 PATH: 
   /opt/homebrew/opt/jpeg/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/opt/jpeg/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/m307/Library/Application Support/JetBrains/Toolbox/scripts:/Users/m307/Library/Application Support/JetBrains/Toolbox/scripts
@@ -14,7 +14,7 @@ Platform:
   darwin arm64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/ssh2-stream: Not found
+  Error: https://registry.yarnpkg.com/FontFaceObserver: Not found
       at Request.params.callback [as _callback] (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:66145:18)
       at Request.self.callback (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:140890:22)
       at Request.emit (node:events:513:28)
@@ -28,14 +28,14 @@ Trace:
 
 npm manifest: 
   {
-    "name": "vite-electron-builder",
-    "description": "Secure boilerplate for Electron app based on Vite",
-    "version": "1.0.2",
+    "name": "fishterm",
+    "description": "A SSH Open source of terminal",
+    "version": "0.0.1alpha",
     "private": true,
     "author": {
-      "email": "kozackunisoft@gmail.com",
-      "name": "Alex Kozack",
-      "url": "https://kozack.me"
+      "email": "dev@m307.dev",
+      "name": "M-307",
+      "url": "https://m307.dev"
     },
     "main": "packages/main/dist/index.cjs",
     "scripts": {
@@ -63,6 +63,7 @@ npm manifest:
       "@types/events": "^3.0.0",
       "@types/node": "^18.11.17",
       "@types/ssh2": "^1.11.6",
+      "@types/ssh2-streams": "^0.1.9",
       "@types/uuid": "^9.0.0",
       "@types/ws": "^8.5.3",
       "@typescript-eslint/eslint-plugin": "5.46.1",
@@ -97,10 +98,12 @@ npm manifest:
       "axios": "^1.2.1",
       "electron-updater": "5.3.0",
       "eventemitter3": "^5.0.0",
+      "ssh2-streams": "^0.4.10",
       "sweetalert2": "^11.6.16",
       "tweetnacl": "^1.0.3",
       "uuid": "^9.0.0",
       "vite-plugin-fonts": "^0.7.0",
+      "vite-svg-loader": "^3.6.0",
       "vue": "3.2.45",
       "ws": "^8.11.0",
       "xterm": "^5.0.0",
@@ -399,6 +402,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
     integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
   
+  "@trysound/sax@0.2.0":
+    version "0.2.0"
+    resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
+    integrity sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==
+  
   "@types/axios@^0.14.0":
     version "0.14.0"
     resolved "https://registry.yarnpkg.com/@types/axios/-/axios-0.14.0.tgz#ec2300fbe7d7dddd7eb9d3abf87999964cafce46"
@@ -511,6 +519,13 @@ Lockfile:
     version "7.3.12"
     resolved "https://registry.npmjs.org/@types/semver/-/semver-7.3.12.tgz"
     integrity sha512-WwA1MW0++RfXmCr12xeYOOC5baSC9mSb0ZqCquFzKhcoF4TvHu5MKOuXsncgZcpVFhB1pXd5hZmM0ryAoCp12A==
+  
+  "@types/ssh2-streams@^0.1.9":
+    version "0.1.9"
+    resolved "https://registry.yarnpkg.com/@types/ssh2-streams/-/ssh2-streams-0.1.9.tgz#8ca51b26f08750a780f82ee75ff18d7160c07a87"
+    integrity sha512-I2J9jKqfmvXLR5GomDiCoHrEJ58hAOmFrekfFqmCFd+A6gaEStvWnPykoWUwld1PNg4G5ag1LwdA+Lz1doRJqg==
+    dependencies:
+      "@types/node" "*"
   
   "@types/ssh2@^1.11.6":
     version "1.11.6"
@@ -740,7 +755,7 @@ Lockfile:
       "@vue/compiler-core" "3.2.45"
       "@vue/shared" "3.2.45"
   
-  "@vue/compiler-sfc@3.2.45", "@vue/compiler-sfc@^3.2.45":
+  "@vue/compiler-sfc@3.2.45", "@vue/compiler-sfc@^3.2.20", "@vue/compiler-sfc@^3.2.45":
     version "3.2.45"
     resolved "https://registry.npmjs.org/@vue/compiler-sfc/-/compiler-sfc-3.2.45.tgz"
     integrity sha512-1jXDuWah1ggsnSAOGsec8cFjT/K6TMZ0sPL3o3d84Ft2AYZi2jWJgRMjw4iaK0rBfA89L5gw427H4n1RZQBu6Q==
@@ -957,7 +972,7 @@ Lockfile:
     optionalDependencies:
       "@types/glob" "^7.1.1"
   
-  asn1@^0.2.4:
+  asn1@^0.2.4, asn1@~0.2.0:
     version "0.2.6"
     resolved "https://registry.npmjs.org/asn1/-/asn1-0.2.6.tgz"
     integrity sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==
@@ -1322,6 +1337,11 @@ Lockfile:
     resolved "https://registry.npmjs.org/commander/-/commander-5.1.0.tgz"
     integrity sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==
   
+  commander@^7.2.0:
+    version "7.2.0"
+    resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
+    integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
+  
   compare-version@^0.1.2:
     version "0.1.2"
     resolved "https://registry.npmjs.org/compare-version/-/compare-version-0.1.2.tgz"
@@ -1368,6 +1388,30 @@ Lockfile:
       shebang-command "^2.0.0"
       which "^2.0.1"
   
+  css-select@^4.1.3:
+    version "4.3.0"
+    resolved "https://registry.yarnpkg.com/css-select/-/css-select-4.3.0.tgz#db7129b2846662fd8628cfc496abb2b59e41529b"
+    integrity sha512-wPpOYtnsVontu2mODhA19JrqWxNsfdatRKd64kmpRbQgh1KtItko5sTnEpPdpSaJszTOhEMlF/RPz28qj4HqhQ==
+    dependencies:
+      boolbase "^1.0.0"
+      css-what "^6.0.1"
+      domhandler "^4.3.1"
+      domutils "^2.8.0"
+      nth-check "^2.0.1"
+  
+  css-tree@^1.1.2, css-tree@^1.1.3:
+    version "1.1.3"
+    resolved "https://registry.yarnpkg.com/css-tree/-/css-tree-1.1.3.tgz#eb4870fb6fd7707327ec95c2ff2ab09b5e8db91d"
+    integrity sha512-tRpdppF7TRazZrjJ6v3stzv93qxRcSsFmW6cX0Zm2NVKpxE1WV1HblnghVv9TreireHkqI/VDEsfolRF1p6y7Q==
+    dependencies:
+      mdn-data "2.0.14"
+      source-map "^0.6.1"
+  
+  css-what@^6.0.1:
+    version "6.1.0"
+    resolved "https://registry.yarnpkg.com/css-what/-/css-what-6.1.0.tgz#fb5effcf76f1ddea2c81bdfaa4de44e79bac70f4"
+    integrity sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==
+  
   css.escape@^1.5.1:
     version "1.5.1"
     resolved "https://registry.npmjs.org/css.escape/-/css.escape-1.5.1.tgz"
@@ -1377,6 +1421,13 @@ Lockfile:
     version "3.0.0"
     resolved "https://registry.npmjs.org/cssesc/-/cssesc-3.0.0.tgz"
     integrity sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==
+  
+  csso@^4.2.0:
+    version "4.2.0"
+    resolved "https://registry.yarnpkg.com/csso/-/csso-4.2.0.tgz#ea3a561346e8dc9f546d6febedd50187cf389529"
+    integrity sha512-wvlcdIbf6pwKEk7vHj8/Bkc0B4ylXZruLvOgs9doS5eOsOpuodOV2zJChSpkp+pRpYQLQMeF04nr3Z68Sta9jA==
+    dependencies:
+      css-tree "^1.1.2"
   
   csstype@^2.6.8:
     version "2.6.20"
@@ -1520,6 +1571,36 @@ Lockfile:
     dependencies:
       esutils "^2.0.2"
   
+  dom-serializer@^1.0.1:
+    version "1.4.1"
+    resolved "https://registry.yarnpkg.com/dom-serializer/-/dom-serializer-1.4.1.tgz#de5d41b1aea290215dc45a6dae8adcf1d32e2d30"
+    integrity sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==
+    dependencies:
+      domelementtype "^2.0.1"
+      domhandler "^4.2.0"
+      entities "^2.0.0"
+  
+  domelementtype@^2.0.1, domelementtype@^2.2.0:
+    version "2.3.0"
+    resolved "https://registry.yarnpkg.com/domelementtype/-/domelementtype-2.3.0.tgz#5c45e8e869952626331d7aab326d01daf65d589d"
+    integrity sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==
+  
+  domhandler@^4.2.0, domhandler@^4.3.1:
+    version "4.3.1"
+    resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-4.3.1.tgz#8d792033416f59d68bc03a5aa7b018c1ca89279c"
+    integrity sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==
+    dependencies:
+      domelementtype "^2.2.0"
+  
+  domutils@^2.8.0:
+    version "2.8.0"
+    resolved "https://registry.yarnpkg.com/domutils/-/domutils-2.8.0.tgz#4437def5db6e2d1f5d6ee859bd95ca7d02048135"
+    integrity sha512-w96Cjofp72M5IIhpjgobBimYEfoPjx1Vx0BSX9P30WBdZW2WIKU0T1Bd0kz2eNZ9ikjKgHbEyKx8BB6H1L3h3A==
+    dependencies:
+      dom-serializer "^1.0.1"
+      domelementtype "^2.2.0"
+      domhandler "^4.2.0"
+  
   dotenv-expand@^5.1.0:
     version "5.1.0"
     resolved "https://registry.npmjs.org/dotenv-expand/-/dotenv-expand-5.1.0.tgz"
@@ -1620,6 +1701,11 @@ Lockfile:
     integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
     dependencies:
       once "^1.4.0"
+  
+  entities@^2.0.0:
+    version "2.2.0"
+    resolved "https://registry.yarnpkg.com/entities/-/entities-2.2.0.tgz#098dc90ebb83d8dffa089d55256b351d34c4da55"
+    integrity sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==
   
   env-paths@^2.2.0:
     version "2.2.1"
@@ -2456,6 +2542,11 @@ Lockfile:
     dependencies:
       escape-string-regexp "^4.0.0"
   
+  mdn-data@2.0.14:
+    version "2.0.14"
+    resolved "https://registry.yarnpkg.com/mdn-data/-/mdn-data-2.0.14.tgz#7113fc4281917d63ce29b43446f701e68c25ba50"
+    integrity sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow==
+  
   merge2@^1.3.0, merge2@^1.4.1:
     version "1.4.1"
     resolved "https://registry.npmjs.org/merge2/-/merge2-1.4.1.tgz"
@@ -3093,6 +3184,15 @@ Lockfile:
     resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.1.2.tgz"
     integrity sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==
   
+  ssh2-streams@^0.4.10:
+    version "0.4.10"
+    resolved "https://registry.yarnpkg.com/ssh2-streams/-/ssh2-streams-0.4.10.tgz#48ef7e8a0e39d8f2921c30521d56dacb31d23a34"
+    integrity sha512-8pnlMjvnIZJvmTzUIIA5nT4jr2ZWNNVHwyXfMGdRJbug9TpI3kd99ffglgfSWqujVv/0gxwMsDn9j9RVst8yhQ==
+    dependencies:
+      asn1 "~0.2.0"
+      bcrypt-pbkdf "^1.0.2"
+      streamsearch "~0.1.2"
+  
   ssh2@^1.11.0:
     version "1.11.0"
     resolved "https://registry.npmjs.org/ssh2/-/ssh2-1.11.0.tgz"
@@ -3104,10 +3204,20 @@ Lockfile:
       cpu-features "~0.0.4"
       nan "^2.16.0"
   
+  stable@^0.1.8:
+    version "0.1.8"
+    resolved "https://registry.yarnpkg.com/stable/-/stable-0.1.8.tgz#836eb3c8382fe2936feaf544631017ce7d47a3cf"
+    integrity sha512-ji9qxRnOVfcuLDySj9qzhGSEFVobyt1kIOSkj1qZzYLzq7Tos/oUUWvotUPQLlrsidqsK6tBH89Bc9kL5zHA6w==
+  
   stat-mode@^1.0.0:
     version "1.0.0"
     resolved "https://registry.npmjs.org/stat-mode/-/stat-mode-1.0.0.tgz"
     integrity sha512-jH9EhtKIjuXZ2cWxmXS8ZP80XyC3iasQxMDV8jzhNJpfDb7VbQLVW4Wvsxz9QZvzV+G4YoSfBUVKDOyxLzi/sg==
+  
+  streamsearch@~0.1.2:
+    version "0.1.2"
+    resolved "https://registry.yarnpkg.com/streamsearch/-/streamsearch-0.1.2.tgz#808b9d0e56fc273d809ba57338e929919a1a9f1a"
+    integrity sha512-jos8u++JKm0ARcSUTAZXOVC0mSox7Bhn6sBgty73P1f3JGf7yG2clTbBNHUdde/kdvP2FESam+vM6l8jBrNxHA==
   
   string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
     version "4.2.3"
@@ -3155,6 +3265,19 @@ Lockfile:
     version "1.0.0"
     resolved "https://registry.npmjs.org/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz"
     integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
+  
+  svgo@^2.7.0:
+    version "2.8.0"
+    resolved "https://registry.yarnpkg.com/svgo/-/svgo-2.8.0.tgz#4ff80cce6710dc2795f0c7c74101e6764cfccd24"
+    integrity sha512-+N/Q9kV1+F+UeWYoSiULYo4xYSDQlTgb+ayMobAXPwMnLvop7oxKMo9OzIrX5x3eS4L4f2UHhc9axXwY8DpChg==
+    dependencies:
+      "@trysound/sax" "0.2.0"
+      commander "^7.2.0"
+      css-select "^4.1.3"
+      css-tree "^1.1.3"
+      csso "^4.2.0"
+      picocolors "^1.0.0"
+      stable "^0.1.8"
   
   sweetalert2@^11.6.16:
     version "11.6.16"
@@ -3403,6 +3526,14 @@ Lockfile:
     integrity sha512-fisKirkQrA2RFwcyI96SENLu1FyRYNIiC/l5DGdD8oV3OsAWGrYKs0e7/VZF6l0rm0QiYA2sOVTzYfrLAzP9cw==
     dependencies:
       fast-glob "^3.2.11"
+  
+  vite-svg-loader@^3.6.0:
+    version "3.6.0"
+    resolved "https://registry.yarnpkg.com/vite-svg-loader/-/vite-svg-loader-3.6.0.tgz#71d246cba5e808c7f183a2a56a9dde6856bb0c92"
+    integrity sha512-bZJffcgCREW57kNkgMhuNqeDznWXyQwJ3wKrRhHLMMzwDnP5jr3vXW3cqsmquRR7VTP5mLdKj1/zzPPooGUuPw==
+    dependencies:
+      "@vue/compiler-sfc" "^3.2.20"
+      svgo "^2.7.0"
   
   vite@4.0.1, "vite@^3.0.0 || ^4.0.0":
     version "4.0.1"
