@@ -1,19 +1,20 @@
 <script lang="ts" setup>
-import {onMounted, defineProps, ref, onBeforeUnmount} from 'vue';
+import {onMounted, defineProps, ref, onBeforeUnmount, onBeforeMount} from 'vue';
 
 import Button from '../components/Button.vue';
 
 import {Terminal} from 'xterm';
 import {FitAddon} from 'xterm-addon-fit';
-import {listenSSH, closePage, closeSSH, openBrowser, resizeSSH} from '#preload';
+import {listenSSH, closePage, closeSSH, openBrowser, resizeSSH, listenMonitor} from '#preload';
 
 const props = defineProps(['page_id', 'screen_size', 'options']);
+
 
 const term = new Terminal({
     theme: {
         background: '#0f172a',
     },
-    fontFamily: 'Fira Code',
+    fontFamily: 'Fira Code, monospace',
 });
 const fitAddon = new FitAddon();
 
@@ -25,15 +26,23 @@ const monitorDiv = ref<HTMLDivElement | null>(null);
 const clientID = ref('');
 
 // Modal loading
-const isLoading = ref(false);
+const isLoading = ref(true);
 const pageStep = ref(0);
 const LoginURL = ref('');
 
+// Monitor data
+const CPU = ref(0);
+const RAM = ref(0);
+const DISK = ref(0);
+const DOWNLOAD_RX = ref(0);
+const UPLOAD_TX = ref(0);
+
+const preloadTerminal = ref<HTMLDivElement | null>(null)
+
+
 onMounted(async () => {
-    console.log(monitorDiv.value?.clientHeight || 0)
     // @ts-ignore
     terminalHeight.value = (window.screen.availHeight - props.screen_size || 0 - monitorDiv.value?.clientHeight) - monitorDiv.value?.clientHeight;
-    console.log(monitorDiv.value?.clientHeight )
 
     // Init window resize
     window.addEventListener(
@@ -64,6 +73,25 @@ onMounted(async () => {
                 term.onData(data => {
                     w(data);
                 });
+
+                // Listen Monitor
+                // @ts-ignore
+                listenMonitor({
+                    sessionId: clientID.value,
+                    cpu: (value: any) => {
+                        CPU.value = value.used
+                    },
+                    ram: (value: any) => {
+                        RAM.value = Number((((value.total-value.avaliable)/value.total) * 100).toFixed(2))
+                    },
+                    disk: (value: any) => {
+                        DISK.value = Number((((value.size-value.avaliable)/value.size) * 100).toFixed(2))
+                    },
+                    networks: (value) => {
+                        DOWNLOAD_RX.value = Number((value.rx / (1024)).toFixed(3))
+                        UPLOAD_TX.value = Number((value.tx / (1024)).toFixed(3))
+                    }
+                })
             },
             sshClose: () => {
                 closePage(props.page_id);
@@ -73,21 +101,23 @@ onMounted(async () => {
                 term.write(d);
             },
             sshTimeout: () => {
-                isShow.value = true;
-                term.write(`Timeout from server xxx.xxx.xxx.xxx`);
-                term.write(`Please try again later`);
+                isLoading.value = false
+                pageStep.value = 4;
             },
             sshError: (title, desc) => {
                 isShow.value = true;
                 term.write(`${title} ${desc}`);
             },
             sshRequst: (type, data) => {
-                // console.log(type, data)
                 if (type === 'CLOUDFLARE_LOGIN') {
                     pageStep.value = 1;
                     LoginURL.value = data.url;
                 }
             },
+            sshAuthFailed: () => {
+                isLoading.value = false;
+                pageStep.value = 3
+            }
         });
     }, 250);
 });
@@ -98,6 +128,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+    <div ref="preloadTerminal" hidden />
     <div
         class="min-h-screen flex items-center justify-center mx-auto z-20 bg-slate-800"
         v-show="!isShow"
@@ -106,7 +137,7 @@ onBeforeUnmount(() => {
             class="flex items-center justify-center p-10 bg-white dark:dark:bg-slate-900 rounded-lg"
         >
             <div class="space-y-3 text-center">
-                <div role="status">
+                <div role="status" v-if="isLoading">
                     <svg
                         class="inline mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                         viewBox="0 0 100 101"
@@ -123,6 +154,9 @@ onBeforeUnmount(() => {
                         />
                     </svg>
                     <span class="sr-only">Loading...</span>
+                </div>
+                <div>
+                    <Icon v-if="pageStep === 3 || pageStep === 4" icon="fas fa-times-circle" class="text-5xl text-red-500" />
                 </div>
                 <div v-if="pageStep === 0">
                     <h1 class="text-black dark:text-white">Connecting to server ....</h1>
@@ -144,6 +178,26 @@ onBeforeUnmount(() => {
                         </Button>
                     </div>
                 </div>
+                <div
+                    v-if="pageStep === 3"
+                >
+                    <h1 class="text-black dark:text-white"
+                        >Authenticate failed</h1
+                    >
+                    <h4 class="text-black dark:text-white text-sm"
+                        >Please change password and try again.</h4
+                    >
+                </div>
+                <div
+                    v-if="pageStep === 4"
+                >
+                    <h1 class="text-black dark:text-white"
+                        >Timeout from server</h1
+                    >
+                    <h4 class="text-black dark:text-white text-sm"
+                        >Please check your host is turn on. (or you forgor paid bill?)</h4
+                    >
+                </div>
             </div>
         </div>
     </div>
@@ -160,23 +214,23 @@ onBeforeUnmount(() => {
         >
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-microchip" />
-                <p>100%</p>
+                <p>{{CPU}}%</p>
             </p>
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-memory" />
-                <p>100%</p>
+                <p>{{RAM}}%</p>
             </p>
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-hard-drive" />
-                <p>100%</p>
+                <p>{{DISK}}%</p>
             </p>
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-upload" />
-                <p>1GB</p>
+                <p>{{ UPLOAD_TX }} kB</p>
             </p>
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-download" />
-                <p>1GB</p>
+                <p>{{DOWNLOAD_RX}} kB</p>
             </p>
         </div>
     </div>
