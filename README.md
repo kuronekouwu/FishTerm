@@ -18,8 +18,8 @@ Please donwload lastest version in [Release](https://github.com/mrwan200/FishTer
 Please see in [contributing.md](./contributing.md)
 
 ## Speical thanks
-- @Maythiwat
-- @nSys
+- [Maythiwat](https://github.com/maythiwat)
+- [nicenathapong](https://github.com/nicenathapong)
 
 ## LICENSE
 [MIT](./LICENSE)
