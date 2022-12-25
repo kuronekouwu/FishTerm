@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import {onMounted, defineProps, ref, onBeforeUnmount, onBeforeMount} from 'vue';
+import {onMounted, defineProps, ref, onBeforeUnmount} from 'vue';
+import prettyBytes from 'pretty-bytes';
 
 import Button from '../components/Button.vue';
 
@@ -75,7 +76,6 @@ onMounted(async () => {
                 });
 
                 // Listen Monitor
-                // @ts-ignore
                 listenMonitor({
                     sessionId: clientID.value,
                     cpu: (value: any) => {
@@ -85,11 +85,12 @@ onMounted(async () => {
                         RAM.value = Number((((value.total-value.avaliable)/value.total) * 100).toFixed(2))
                     },
                     disk: (value: any) => {
-                        DISK.value = Number((((value.size-value.avaliable)/value.size) * 100).toFixed(2))
+                        console.log(value)
+                        DISK.value = Number((((value.size-value.usage)/value.size) * 100).toFixed(2))
                     },
                     networks: (value) => {
-                        DOWNLOAD_RX.value = Number((value.rx / (1024)).toFixed(3))
-                        UPLOAD_TX.value = Number((value.tx / (1024)).toFixed(3))
+                        DOWNLOAD_RX.value = value.rx
+                        UPLOAD_TX.value = value.tx
                     }
                 })
             },
@@ -226,11 +227,11 @@ onBeforeUnmount(() => {
             </p>
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-upload" />
-                <p>{{ UPLOAD_TX }} kB</p>
+                <p>{{ prettyBytes(UPLOAD_TX) }}</p>
             </p>
             <p class="flex items-center space-x-1">
                 <Icon icon="fas fa-download" />
-                <p>{{DOWNLOAD_RX}} kB</p>
+                <p>{{ prettyBytes(DOWNLOAD_RX) }}</p>
             </p>
         </div>
     </div>
