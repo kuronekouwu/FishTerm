@@ -29,9 +29,6 @@ export class SSHShellMonitor extends EventEmitter {
         this.ssh = ssh
 
         // Create session [RAM,CPU,DISK]
-        // this.ssh.session(1, this.MAX_WINDOWS, this.MAX_BUFFER)
-        // this.listenEvent(1, "disk")
-
         for(let i = 1; i <= offset + this.eventName.length; i++){
             const eventName = this.eventName[i-1]
             if(!eventName) continue
