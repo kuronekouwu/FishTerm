@@ -133,6 +133,9 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
             }
             cb(type, data);
         });
+        wsSSH.on('ssh.auth.failed', () => event.sender.send(`ssh.session.${sessionData}.auth.failed`))
+        wsSSH.on('ssh.timeout', () => event.sender.send(`ssh.session.${sessionData}.timeout`))
+
         wsSSH.on('ssh.connect', (client: SSHProtocolClient) => {
             event.sender.send(`ssh.session.${sessionData}.open`);
             const shell = client.shell({
@@ -190,13 +193,8 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
             }
             cb(type, data);
         });
-        ssh.on('ssh.auth.failed', () => {
-            event.sender.send(`ssh.session.${sessionData}.auth.failed`);
-        })
-        ssh.on('ssh.timeout', () => {
-            console.log("Timeout from server")
-            event.sender.send(`ssh.session.${sessionData}.timeout`);
-        })
+        ssh.on('ssh.auth.failed', () => event.sender.send(`ssh.session.${sessionData}.auth.failed`))
+        ssh.on('ssh.timeout', () => event.sender.send(`ssh.session.${sessionData}.timeout`))
 
         ssh.on('ssh.connect', (client: SSHProtocolClient) => {
             event.sender.send(`ssh.session.${sessionData}.open`);

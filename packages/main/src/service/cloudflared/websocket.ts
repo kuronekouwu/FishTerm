@@ -41,6 +41,10 @@ export class CloudflareSSH extends EventEmitter {
                 this.websocket.close(1000);
             });
             ssh.once('ssh.error', n => this.emit('ssh.error', n));
+            ssh.once(("auth_failed"), () => {
+                this.emit("ssh.auth.failed")
+            })
+            
             ssh.once('close', () => this.emit('ssh.close'))
 
             // SSH2 Data

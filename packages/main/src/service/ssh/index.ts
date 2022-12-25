@@ -28,14 +28,16 @@ export class SSHProtocol extends EventEmitter {
                     if (type === 'pwd') {
                         this.ssh.authPassword(data.username, data.password);
                     } else if (type === 'cert') {
-                        // @ts-ignore
-                        const certKey = utils.parseKey(data.password);
+                        let certKey = utils.parseKey(data.password);
+                        if(Array.isArray(certKey)) certKey = certKey[0]
+
                         // @ts-ignore
                         this.ssh.authPK(data.username, certKey);
                         
                         this.ssh.once('USERAUTH_PK_OK', () => {
                             // @ts-ignore
                             this.ssh.authPK(data.username, certKey, function (buf, cb) {
+                                // certKey?.
                                 // @ts-ignore
                                 cb(certKey?.sign(buf));
                             });
