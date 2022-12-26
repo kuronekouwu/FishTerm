@@ -129,7 +129,7 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
         const cloudflare = new CloudflreAccess();
 
         cloudflare.events.once('login', url =>
-            event.sender.send(`request`, 'CLOUDFLARE_LOGIN', {
+            sendEvent(`request`, 'CLOUDFLARE_LOGIN', {
                 url: url,
             }),
         );
