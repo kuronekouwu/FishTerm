@@ -100,23 +100,46 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
     configData = hashpasswordValue(info, true);
     const connection = configData.connection;
 
+    // Init session
+    const sessionEvent = `ssh.session.${sessionData}`;
+
+    // Clear all event
+    const clearAllEvent = () => {
+        const events = [
+            "write",
+            "resize",
+            "password.request",
+            "auth.failed",
+            "timeout",
+            "open",
+            "data",
+            "close",
+            "monitor"
+        ]
+
+        for(const key of events) ipcMain.removeAllListeners(`${sessionEvent}.${key}`)
+    }
+
+    // Send into user event
+    const sendEvent = (name: string, ...args: any[]) => {
+        if(event.sender.isDestroyed()) return;
+        event.sender.send(`${sessionEvent}.${name}`, ...args);
+    }
+
     if (connection.type === 1) {
         const cloudflare = new CloudflreAccess();
 
+        
         cloudflare.events.once('login', url =>
-            event.sender.send(`ssh.session.${sessionData}.request`, 'CLOUDFLARE_LOGIN', {
+            event.sender.send(`request`, 'CLOUDFLARE_LOGIN', {
                 url: url,
             }),
         );
-        cloudflare.events.once('complete', token => {
-            console.log('Authenicated success');
-        });
 
         const token = await cloudflare.login(connection.host);
 
         // Init Websocket
         const wsSSH = new CloudflareSSH(connection.host, token);
-
         wsSSH.on('ssh.password.request', cb => {
             let type = '';
             const data = {
@@ -133,11 +156,11 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
             }
             cb(type, data);
         });
-        wsSSH.on('ssh.auth.failed', () => event.sender.send(`ssh.session.${sessionData}.auth.failed`))
-        wsSSH.on('ssh.timeout', () => event.sender.send(`ssh.session.${sessionData}.timeout`))
+        wsSSH.on('ssh.auth.failed', () => sendEvent(`auth.failed`))
+        wsSSH.on('ssh.timeout', () => sendEvent(`timeout`))
 
         wsSSH.on('ssh.connect', (client: SSHProtocolClient) => {
-            event.sender.send(`ssh.session.${sessionData}.open`);
+            sendEvent(`open`);
             const shell = client.shell({
                 cols: cols,
                 rows: rows,
@@ -146,32 +169,34 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
 
             // SSH Data
             shell.on('ssh.data', d => {
-                event.sender.send(`ssh.session.${sessionData}.data`, d);
+                sendEvent(`data`, d);
             });
 
             wsSSH.on('websocket.close', () => {
-                event.sender.send(`ssh.session.${sessionData}.close`);
+                monitor.closeEventMonitor()
+                clearAllEvent()
+                sendEvent(`close`);
             });
 
             // SSH Monitor
             const monitor = client.monitor()
             monitor.on("cpu", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "cpu", value);
+                sendEvent(`monitor`, "cpu", value);
             })
             monitor.on("ram", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "ram", value);
+                sendEvent(`monitor`, "ram", value);
             })
             monitor.on("network", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "network", value);
+                sendEvent(`monitor`, "network", value);
             })
             monitor.on("disk", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "disk", value);
+                sendEvent(`monitor`, "disk", value);
             })
 
             // IPC
-            ipcMain.once(`ssh.session.${sessionData}.close`, (e, text) => shell.disconnect());
-            ipcMain.on(`ssh.session.${sessionData}.write`, (e, text) => shell.write(text));
-            ipcMain.on(`ssh.session.${sessionData}.resize`, (e, cols, rows) => {
+            ipcMain.once(`${sessionEvent}.close`, () => client.disconnect());
+            ipcMain.on(`${sessionEvent}.write`, (_, text) => shell.write(text));
+            ipcMain.on(`${sessionEvent}.resize`, (_, cols, rows) => {
                 shell.resize(cols, rows);
             });
         });
@@ -193,45 +218,48 @@ ipcMain.on('ssh.session.create', async (event, sessionData, configId, cols, rows
             }
             cb(type, data);
         });
-        ssh.on('ssh.auth.failed', () => event.sender.send(`ssh.session.${sessionData}.auth.failed`))
-        ssh.on('ssh.timeout', () => event.sender.send(`ssh.session.${sessionData}.timeout`))
-
+        ssh.on('ssh.auth.failed', () => sendEvent(`auth.failed`))
+        ssh.on('ssh.timeout', () => sendEvent(`timeout`))
+        
         ssh.on('ssh.connect', (client: SSHProtocolClient) => {
-            event.sender.send(`ssh.session.${sessionData}.open`);
+            sendEvent(`open`);
             const shell = client.shell({
                 cols: cols,
                 rows: rows,
                 terms: 'xterm-color',
             });
-            const monitor = client.monitor()
+
+
+            
             // SSH Data
             shell.on('ssh.data', d => {
-                event.sender.send(`ssh.session.${sessionData}.data`, d);
+                sendEvent(`data`, d);
             });
             ssh.on('socket.close', () => {
-                ipcMain.removeAllListeners(`ssh.session.${sessionData}.write`)
-                ipcMain.removeAllListeners(`ssh.session.${sessionData}.resize`)
-                event.sender.send(`ssh.session.${sessionData}.close`);
+                monitor.closeEventMonitor()
+                clearAllEvent()
+                sendEvent(`close`);
             });
 
             // SSH Monitor
+            const monitor = client.monitor()
             monitor.on("cpu", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "cpu", value);
+                if(!event.sender.isDestroyed()) sendEvent(`monitor`, "cpu", value);
             })
             monitor.on("ram", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "ram", value);
+                sendEvent(`monitor`, "ram", value);
             })
             monitor.on("network", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "network", value);
+                sendEvent(`monitor`, "network", value);
             })
             monitor.on("disk", (value) => {
-                event.sender.send(`ssh.session.${sessionData}.monitor`, "disk", value);
+                sendEvent(`monitor`, "disk", value);
             })
 
             // IPC
-            ipcMain.once(`ssh.session.${sessionData}.close`, (e, text) => shell.disconnect());
-            ipcMain.on(`ssh.session.${sessionData}.write`, (e, text) => shell.write(text));
-            ipcMain.on(`ssh.session.${sessionData}.resize`, (e, cols, rows) => {
+            ipcMain.once(`${sessionEvent}.close`, () => client.disconnect());
+            ipcMain.on(`${sessionEvent}.write`, (_, text) => shell.write(text));
+            ipcMain.on(`${sessionEvent}.resize`, (_, cols, rows) => {
                 shell.resize(cols, rows);
             });
         })
