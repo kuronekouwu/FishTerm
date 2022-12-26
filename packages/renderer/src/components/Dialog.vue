@@ -95,7 +95,10 @@ export default defineComponent({
                                 class="absolute right-3 top-3"
                                 @click="closeModal"
                             >
-                                <Icon icon="fas fa-times" class="text-indigo-600 dark:text-white text-xl" />
+                                <Icon
+                                    icon="fas fa-times"
+                                    class="text-indigo-600 dark:text-white text-xl"
+                                />
                             </button>
                             <slot />
                         </div>

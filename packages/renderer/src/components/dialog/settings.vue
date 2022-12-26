@@ -89,7 +89,7 @@ function deleteConfig() {
     removeSSHConfig(props.configId, () => {
         showModal.value = false;
         emit('closePage');
-    })
+    });
 }
 
 function updatePrivateKey(path: string) {

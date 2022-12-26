@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, toRef } from "vue";
+import {defineComponent, toRef} from 'vue';
 
 export default defineComponent({
     props: {
@@ -9,13 +9,13 @@ export default defineComponent({
         },
         icon: {
             type: String,
-            required: false
-        }
+            required: false,
+        },
     },
     setup(props) {
-        const title = toRef(props, "title");
-        const icon = toRef(props, "icon");
-        
+        const title = toRef(props, 'title');
+        const icon = toRef(props, 'icon');
+
         return {
             icon,
             title,
@@ -27,6 +27,9 @@ export default defineComponent({
 <template>
     <div class="inline-flex items-center">
         <!-- <vue-feather :type="icon" class="mr-2" v-if="icon" /> -->
-        <h1 class="ml-1 text-2xl font-bold text-gray-700 dark:text-white" v-text="title" />
+        <h1
+            class="ml-1 text-2xl font-bold text-gray-700 dark:text-white"
+            v-text="title"
+        />
     </div>
 </template>

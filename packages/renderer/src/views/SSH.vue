@@ -10,7 +10,6 @@ import {listenSSH, closePage, closeSSH, openBrowser, resizeSSH, listenMonitor} f
 
 const props = defineProps(['page_id', 'screen_size', 'options']);
 
-
 const term = new Terminal({
     theme: {
         background: '#0f172a',
@@ -38,12 +37,12 @@ const DISK = ref(0);
 const DOWNLOAD_RX = ref(0);
 const UPLOAD_TX = ref(0);
 
-const preloadTerminal = ref<HTMLDivElement | null>(null)
-
+const preloadTerminal = ref<HTMLDivElement | null>(null);
 
 onMounted(async () => {
-    // @ts-ignore
-    terminalHeight.value = (window.screen.availHeight - props.screen_size || 0 - monitorDiv.value?.clientHeight) - monitorDiv.value?.clientHeight;
+    terminalHeight.value =
+        (window.screen.availHeight - props.screen_size || 0) -
+        (monitorDiv.value?.clientHeight || 0);
 
     // Init window resize
     window.addEventListener(
@@ -79,20 +78,24 @@ onMounted(async () => {
                 listenMonitor({
                     sessionId: clientID.value,
                     cpu: (value: any) => {
-                        CPU.value = value.used
+                        CPU.value = value.used;
                     },
                     ram: (value: any) => {
-                        RAM.value = Number((((value.total-value.avaliable)/value.total) * 100).toFixed(2))
+                        RAM.value = Number(
+                            (((value.total - value.avaliable) / value.total) * 100).toFixed(2),
+                        );
                     },
                     disk: (value: any) => {
-                        console.log(value)
-                        DISK.value = Number((((value.size-value.usage)/value.size) * 100).toFixed(2))
+                        console.log(value);
+                        DISK.value = Number(
+                            (((value.size - value.usage) / value.size) * 100).toFixed(2),
+                        );
                     },
-                    networks: (value) => {
-                        DOWNLOAD_RX.value = value.rx
-                        UPLOAD_TX.value = value.tx
-                    }
-                })
+                    networks: value => {
+                        DOWNLOAD_RX.value = value.rx;
+                        UPLOAD_TX.value = value.tx;
+                    },
+                });
             },
             sshClose: () => {
                 closePage(props.page_id);
@@ -102,7 +105,7 @@ onMounted(async () => {
                 term.write(d);
             },
             sshTimeout: () => {
-                isLoading.value = false
+                isLoading.value = false;
                 pageStep.value = 4;
             },
             sshError: (title, desc) => {
@@ -117,8 +120,8 @@ onMounted(async () => {
             },
             sshAuthFailed: () => {
                 isLoading.value = false;
-                pageStep.value = 3
-            }
+                pageStep.value = 3;
+            },
         });
     }, 250);
 });
@@ -129,7 +132,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div ref="preloadTerminal" hidden />
+    <div
+        ref="preloadTerminal"
+        hidden
+    />
     <div
         class="min-h-screen flex items-center justify-center mx-auto z-20 bg-slate-800"
         v-show="!isShow"
@@ -138,7 +144,10 @@ onBeforeUnmount(() => {
             class="flex items-center justify-center p-10 bg-white dark:dark:bg-slate-900 rounded-lg"
         >
             <div class="space-y-3 text-center">
-                <div role="status" v-if="isLoading">
+                <div
+                    role="status"
+                    v-if="isLoading"
+                >
                     <svg
                         class="inline mr-2 w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                         viewBox="0 0 100 101"
@@ -157,7 +166,11 @@ onBeforeUnmount(() => {
                     <span class="sr-only">Loading...</span>
                 </div>
                 <div>
-                    <Icon v-if="pageStep === 3 || pageStep === 4" icon="fas fa-times-circle" class="text-5xl text-red-500" />
+                    <Icon
+                        v-if="pageStep === 3 || pageStep === 4"
+                        icon="fas fa-times-circle"
+                        class="text-5xl text-red-500"
+                    />
                 </div>
                 <div v-if="pageStep === 0">
                     <h1 class="text-black dark:text-white">Connecting to server ....</h1>
@@ -179,22 +192,14 @@ onBeforeUnmount(() => {
                         </Button>
                     </div>
                 </div>
-                <div
-                    v-if="pageStep === 3"
-                >
-                    <h1 class="text-black dark:text-white"
-                        >Authenticate failed</h1
-                    >
+                <div v-if="pageStep === 3">
+                    <h1 class="text-black dark:text-white">Authenticate failed</h1>
                     <h4 class="text-black dark:text-white text-sm"
                         >Please change password and try again.</h4
                     >
                 </div>
-                <div
-                    v-if="pageStep === 4"
-                >
-                    <h1 class="text-black dark:text-white"
-                        >Timeout from server</h1
-                    >
+                <div v-if="pageStep === 4">
+                    <h1 class="text-black dark:text-white">Timeout from server</h1>
                     <h4 class="text-black dark:text-white text-sm"
                         >Please check your host is turn on. (or you forgor paid bill?)</h4
                     >
@@ -206,33 +211,33 @@ onBeforeUnmount(() => {
         <div
             ref="termDiv"
             :style="{
-                'min-height': `${((terminalHeight / windowHeight) * 100)}vh !important`,
+                'min-height': `${(terminalHeight / windowHeight) * 100}vh !important`,
             }"
         ></div>
         <div
             ref="monitorDiv"
-            class="py-1  sticky bottom-0 space-x-3 flex bg-gray-200 z-50 w-full dark:dark:bg-slate-800 text-dark dark:text-white justify-end"
+            class="py-1 sticky bottom-0 space-x-3 flex bg-gray-200 z-50 w-full dark:dark:bg-slate-800 text-dark dark:text-white justify-end"
         >
-            <p class="flex items-center space-x-1">
+            <div class="flex items-center space-x-1">
                 <Icon icon="fas fa-microchip" />
-                <p>{{CPU}}%</p>
-            </p>
-            <p class="flex items-center space-x-1">
+                <p>{{ CPU }}%</p>
+            </div>
+            <div class="flex items-center space-x-1">
                 <Icon icon="fas fa-memory" />
-                <p>{{RAM}}%</p>
-            </p>
-            <p class="flex items-center space-x-1">
+                <p>{{ RAM }}%</p>
+            </div>
+            <div class="flex items-center space-x-1">
                 <Icon icon="fas fa-hard-drive" />
-                <p>{{DISK}}%</p>
-            </p>
-            <p class="flex items-center space-x-1">
+                <p>{{ DISK }}%</p>
+            </div>
+            <div class="flex items-center space-x-1">
                 <Icon icon="fas fa-upload" />
                 <p>{{ prettyBytes(UPLOAD_TX) }}</p>
-            </p>
-            <p class="flex items-center space-x-1">
+            </div>
+            <div class="flex items-center space-x-1">
                 <Icon icon="fas fa-download" />
                 <p>{{ prettyBytes(DOWNLOAD_RX) }}</p>
-            </p>
+            </div>
         </div>
     </div>
 </template>

@@ -5,7 +5,7 @@ import useClickOutside from '../../plugins/useClickOutside';
 const {onClickOutside} = useClickOutside();
 
 const props = defineProps<SelectInfo>();
-const emit = defineEmits(['update:modelValue', 'onChange'])
+const emit = defineEmits(['update:modelValue', 'onChange']);
 
 interface SelectInfo {
     modelValue: any;
@@ -57,7 +57,7 @@ function clickSelectTextBox() {
 function SelectItem(data: SelectData) {
     SLabel_isOpen.value = false;
 
-    emit("onChange", data.value)
+    emit('onChange', data.value);
     emit('update:modelValue', data.value);
 }
 
@@ -90,7 +90,7 @@ window.addEventListener('resize', function () {
 <template>
     <div class="col-span-12 mb-2">
         <label
-            class="block text-md font-medium text-black dark:text-white mb-2 "
+            class="block text-md font-medium text-black dark:text-white mb-2"
             v-text="name"
         />
 
@@ -103,13 +103,16 @@ window.addEventListener('resize', function () {
                     aria-expanded="true"
                     aria-labelledby="listbox-label"
                     id="selectBox-label"
-                    class="cursor-pointer dark:border-slate-600 dark:bg-slate-800  relative w-full rounded-md border border-gray-300 bg-white  pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
+                    class="cursor-pointer dark:border-slate-600 dark:bg-slate-800 relative w-full rounded-md border border-gray-300 bg-white pl-3 pr-10 py-2 text-left focus:outline-none focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5"
                 >
                     <div
                         class="flex items-center space-x-3 text-black dark:text-white"
                         v-if="SLabel_dataPreview.name"
                     >
-                        <Icon :icon="SLabel_dataPreview.icon" class="text-black dark:text-white" />
+                        <Icon
+                            :icon="SLabel_dataPreview.icon"
+                            class="text-black dark:text-white"
+                        />
                         <span
                             class="block truncate"
                             v-text="SLabel_dataPreview.name"
@@ -127,7 +130,10 @@ window.addEventListener('resize', function () {
                     <span
                         class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
                     >
-                        <Icon icon="fa-soild fa-chevron-down" class="text-white" />
+                        <Icon
+                            icon="fa-soild fa-chevron-down"
+                            class="text-white"
+                        />
                     </span>
                 </button>
             </span>
@@ -141,7 +147,7 @@ window.addEventListener('resize', function () {
             >
                 <div
                     v-show="SLabel_isOpen"
-                    class="fixed mt-1 rounded-md bg-white shadow-lg "
+                    class="fixed mt-1 rounded-md bg-white shadow-lg"
                     :style="`width: ${SBox_Size}px;`"
                 >
                     <ul
@@ -162,7 +168,10 @@ window.addEventListener('resize', function () {
                             class="select-none relative py-2 pl-3 pr-9 cursor-pointer text-indigo-600 hover:bg-indigo-600 hover:text-white dark:text-white"
                         >
                             <div class="flex items-center space-x-3">
-                                <Icon :icon="d.icon" v-if="d.icon" />
+                                <Icon
+                                    :icon="d.icon"
+                                    v-if="d.icon"
+                                />
                                 <span
                                     class="block truncate"
                                     v-text="d.name"
@@ -175,7 +184,10 @@ window.addEventListener('resize', function () {
                                     'font-semibold': isSelected(d.value),
                                 }"
                             >
-                                <Icon icon="fa-soild fa-check-circle" v-if="isSelected(d.value)" />
+                                <Icon
+                                    icon="fa-soild fa-check-circle"
+                                    v-if="isSelected(d.value)"
+                                />
                             </span>
                         </li>
                     </ul>

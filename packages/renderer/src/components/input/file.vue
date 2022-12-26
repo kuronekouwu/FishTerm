@@ -1,25 +1,27 @@
 <script lang="ts" setup>
-import { defineComponent, toRef, ref, defineProps, watch, onMounted} from "vue";
+import {defineComponent, toRef, ref, defineProps, watch, onMounted} from 'vue';
 
-const props = defineProps(["name","text","path", "modalValue"])
-const emit = defineEmits(["updatePath"])
+const props = defineProps(['name', 'text', 'path', 'modalValue']);
+const emit = defineEmits(['updatePath']);
 
-const previewFile = ref('')
+const previewFile = ref('');
 
 function onInput(event: Event) {
     const target = event.target as HTMLInputElement;
-    if(!target.files) return;
-    emit("updatePath", target.files[0].path);
+    if (!target.files) return;
+    emit('updatePath', target.files[0].path);
 }
 
-watch(() => props.path, (n: string, o: string) => {
-    previewFile.value = n
-})
+watch(
+    () => props.path,
+    (n: string, o: string) => {
+        previewFile.value = n;
+    },
+);
 
 onMounted(() => {
-    previewFile.value = props.path || 'Please upload file'
-})
-
+    previewFile.value = props.path || 'Please upload file';
+});
 </script>
 
 <template>
@@ -36,11 +38,21 @@ onMounted(() => {
                     <!-- <vue-feather type="upload" class="w-8 h-8 text-gray-400 group-hover:text-gray-600" v-if="!pathPreview || !tempPathPreview" /> -->
                     <!-- <vue-feather type="file" class="w-8 h-8 text-gray-400 group-hover:text-gray-600" v-else /> -->
 
-                    <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600" v-text="props.text" />
-                    <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600" v-text="previewFile" />
+                    <p
+                        class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600"
+                        v-text="props.text"
+                    />
+                    <p
+                        class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600"
+                        v-text="previewFile"
+                    />
                 </div>
-                
-                <input type="file" class="opacity-0" @input="onInput($event)" />
+
+                <input
+                    type="file"
+                    class="opacity-0"
+                    @input="onInput($event)"
+                />
             </label>
         </div>
     </div>

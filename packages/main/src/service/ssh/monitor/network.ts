@@ -16,10 +16,10 @@ export default function networkFilter(raw: Buffer) {
 
     const data = raw.toString().split(REGEX);
 
-    const tx_val =  Number(data[2])
+    const tx_val = Number(data[2]);
     const rx_val = Number(data[1]);
-    if(RX > 0) resp.rx = rx_val - RX;
-    if(TX > 0) resp.tx = tx_val - TX
+    if (RX > 0) resp.rx = rx_val - RX;
+    if (TX > 0) resp.tx = tx_val - TX;
 
     RX = rx_val;
     TX = tx_val;

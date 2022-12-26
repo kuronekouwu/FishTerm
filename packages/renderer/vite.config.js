@@ -7,7 +7,7 @@ import {join} from 'node:path';
 import {injectAppVersion} from '../../version/inject-app-version-plugin.mjs';
 
 import svgLoader from 'vite-svg-loader';
-import ViteFonts from 'vite-plugin-fonts'
+import ViteFonts from 'vite-plugin-fonts';
 
 const PACKAGE_ROOT = __dirname;
 const PROJECT_ROOT = join(PACKAGE_ROOT, '../..');
@@ -17,53 +17,53 @@ const PROJECT_ROOT = join(PACKAGE_ROOT, '../..');
  * @see https://vitejs.dev/config/
  */
 const config = {
-  mode: process.env.MODE,
-  root: PACKAGE_ROOT,
-  envDir: PROJECT_ROOT,
-  resolve: {
-    alias: {
-      '/@/': join(PACKAGE_ROOT, 'src') + '/',
+    mode: process.env.MODE,
+    root: PACKAGE_ROOT,
+    envDir: PROJECT_ROOT,
+    resolve: {
+        alias: {
+            '/@/': join(PACKAGE_ROOT, 'src') + '/',
+        },
     },
-  },
-  base: '',
-  server: {
-    fs: {
-      strict: true,
+    base: '',
+    server: {
+        fs: {
+            strict: true,
+        },
     },
-  },
-  build: {
-    sourcemap: true,
-    target: `chrome${chrome}`,
-    outDir: 'dist',
-    assetsDir: '.',
-    rollupOptions: {
-      input: join(PACKAGE_ROOT, 'index.html'),
+    build: {
+        sourcemap: true,
+        target: `chrome${chrome}`,
+        outDir: 'dist',
+        assetsDir: '.',
+        rollupOptions: {
+            input: join(PACKAGE_ROOT, 'index.html'),
+        },
+        emptyOutDir: true,
+        reportCompressedSize: false,
     },
-    emptyOutDir: true,
-    reportCompressedSize: false,
-  },
-  test: {
-    environment: 'happy-dom',
-  },
-  plugins: [
-    vue(),
-    renderer.vite({
-      preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts'),
-    }),
-    injectAppVersion(),
-    ViteFonts({
-      custom: {
-        // preload: true,
-        families: {
-          'Fira Code': './assets/woff2/*.woff2'
-        }
-      }
-    }),
-    svgLoader()
-  ],
-  define: {
-    '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
-}
+    test: {
+        environment: 'happy-dom',
+    },
+    plugins: [
+        vue(),
+        renderer.vite({
+            preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts'),
+        }),
+        injectAppVersion(),
+        ViteFonts({
+            custom: {
+                // preload: true,
+                families: {
+                    'Fira Code': './assets/woff2/*.woff2',
+                },
+            },
+        }),
+        svgLoader(),
+    ],
+    define: {
+        __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    },
 };
 
 export default config;

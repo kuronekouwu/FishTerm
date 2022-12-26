@@ -14,8 +14,8 @@ export {
     removeSSHConfig,
     closeSSH,
     resizeSSH,
-    listenMonitor
+    listenMonitor,
 } from './ssh';
 export {loadConfig} from './config';
 export {applicationListen} from './app';
-export { openBrowser } from './url'
+export {openBrowser} from './url';

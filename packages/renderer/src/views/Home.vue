@@ -52,8 +52,8 @@ onMounted(() => {
                 config[key] = d[key];
             }
             // Remove data old
-            for(const val of spicalRemoveArray){
-                delete config[val]
+            for (const val of spicalRemoveArray) {
+                delete config[val];
             }
         },
         createSSHConfig: () => {
@@ -81,7 +81,7 @@ onMounted(() => {
                 Add terminal
             </Button>
         </div>
-        <div class="space-y-3  overflow-y-auto h-[800px] my-7 scrollbar">
+        <div class="space-y-3 overflow-y-auto h-[800px] my-7 scrollbar">
             <Card
                 v-for="(key, idx) in Object.keys(config)"
                 :key="idx"
@@ -114,15 +114,11 @@ onMounted(() => {
                             "
                         />
                         <div class="flex mt-3 pt-0 space-x-2">
-                            <Button
-                                @click="createPage('ssh', {configId: key})"
-                            >
+                            <Button @click="createPage('ssh', {configId: key})">
                                 <Icon icon="fas fa-plug" />
                                 <p>Connect</p>
                             </Button>
-                            <Button
-                                @click="openSettings(key)"
-                            >
+                            <Button @click="openSettings(key)">
                                 <Icon icon="fas fa-cogs" />
                                 <p>Settings</p>
                             </Button>

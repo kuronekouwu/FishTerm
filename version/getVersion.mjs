@@ -5,5 +5,5 @@
  * @return {string}
  */
 export function getVersion() {
-  return process.env.npm_package_version;
+    return process.env.npm_package_version;
 }

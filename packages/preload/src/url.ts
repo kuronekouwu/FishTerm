@@ -1,5 +1,5 @@
-import { shell } from 'electron'
+import {shell} from 'electron';
 
-export function openBrowser(url: string){
-    shell.openExternal(url)
+export function openBrowser(url: string) {
+    shell.openExternal(url);
 }

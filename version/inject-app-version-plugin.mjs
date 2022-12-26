@@ -5,9 +5,9 @@ import {getVersion} from './getVersion.mjs';
  * @return {import('vite').Plugin}
  */
 export const injectAppVersion = () => ({
-  name: 'inject-version',
-  config: () => {
-    // TODO: Find better way to inject app version
-    process.env.VITE_APP_VERSION = getVersion();
-  },
+    name: 'inject-version',
+    config: () => {
+        // TODO: Find better way to inject app version
+        process.env.VITE_APP_VERSION = getVersion();
+    },
 });

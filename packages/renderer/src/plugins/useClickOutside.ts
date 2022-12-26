@@ -1,11 +1,6 @@
-import { watch, unref, onUnmounted } from "vue";
+import {watch, unref, onUnmounted} from 'vue';
 
-const EVENTS = [
-    "mousedown", 
-    "touchstart", 
-    "pointerdown"
-];
-
+const EVENTS = ['mousedown', 'touchstart', 'pointerdown'];
 
 function unrefElement(target: any) {
     return unref(target)?.$el ?? unref(target);
@@ -14,7 +9,7 @@ function unrefElement(target: any) {
 function useEventListener(target: Window, event: any, listener: any, options: Object) {
     if (!target) return;
 
-    let cleanup = () => {}
+    let cleanup = () => {};
 
     watch(
         () => unref(target),
@@ -26,12 +21,12 @@ function useEventListener(target: Window, event: any, listener: any, options: Ob
             el.addEventListener(event, listener, options);
             cleanup = () => {
                 el.removeEventListener(event, listener, options);
-            }
+            };
         },
         {
-            immediate: true
-        }
-    )
+            immediate: true,
+        },
+    );
 
     onUnmounted(stop);
 
@@ -39,28 +34,28 @@ function useEventListener(target: Window, event: any, listener: any, options: Ob
 }
 
 export default function useClickOutside() {
-    function onClickOutside(target: any, callback: Function){
+    function onClickOutside(target: any, callback: Function) {
         const listener = (event: any) => {
             // Unreferenced element can be removed from DOM
             const el = unrefElement(target);
-            if(!el) return;
-            if(el === event.target || event.composedPath().includes(el)) return;
+            if (!el) return;
+            if (el === event.target || event.composedPath().includes(el)) return;
 
             callback(event);
-        }
+        };
 
         let disposables = EVENTS.map(_event => {
-            useEventListener(window, _event, listener, { capture: true });
+            useEventListener(window, _event, listener, {capture: true});
         });
 
         const stop = () => {
             disposables.forEach((stop: any) => {
                 try {
-                    stop()
-                } catch(e) {}
+                    stop();
+                } catch (e) {}
             });
             disposables = [];
-        }
+        };
 
         onUnmounted(stop);
 
@@ -68,6 +63,6 @@ export default function useClickOutside() {
     }
 
     return {
-        onClickOutside
-    }
+        onClickOutside,
+    };
 }
