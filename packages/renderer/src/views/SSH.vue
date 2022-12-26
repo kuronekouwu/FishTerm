@@ -86,7 +86,6 @@ onMounted(async () => {
                         );
                     },
                     disk: (value: any) => {
-                        console.log(value);
                         DISK.value = Number(
                             (((value.size - value.usage) / value.size) * 100).toFixed(2),
                         );
@@ -109,8 +108,7 @@ onMounted(async () => {
                 pageStep.value = 4;
             },
             sshError: (title, desc) => {
-                isShow.value = true;
-                term.write(`${title} ${desc}`);
+                console.error(`Got error SSH`)
             },
             sshRequst: (type, data) => {
                 if (type === 'CLOUDFLARE_LOGIN') {
