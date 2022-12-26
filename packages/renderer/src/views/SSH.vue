@@ -108,7 +108,7 @@ onMounted(async () => {
                 pageStep.value = 4;
             },
             sshError: (title, desc) => {
-                console.error(`Got error SSH`)
+                console.error(`Got error SSH`);
             },
             sshRequst: (type, data) => {
                 if (type === 'CLOUDFLARE_LOGIN') {
